@@ -1,4 +1,4 @@
-# First meeting
+# First meeting preparation
 
 Forecasting book club with SoCal RUG
 
