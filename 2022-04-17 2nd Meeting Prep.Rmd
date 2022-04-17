@@ -5,13 +5,17 @@ date: "4/17/2022"
 output: html_document
 ---
 
+# Chapter 2 Time series graphics [[textbook link]](https://otexts.com/fpp3/graphics.html)
+
 Quote: "Graphs enable many features of the data to be visualised, including patterns, unusual observations, changes over time, and relationships between variables"
 
 ```{r load libraries, include=FALSE, echo=FALSE}
 library(fpp3)
 ```
+## 2.1 `tsibble` objects [[textbook link]](https://otexts.com/fpp3/tsibbles.html)
 
 ```{r first tsibble example}
+# tsibble is used for temporal data
 y <- tsibble(
   Year = 2015:2019,
   Observation = c(123, 39, 78, 52, 110),
@@ -20,29 +24,32 @@ y <- tsibble(
 y
 ```
 
+```{r monthly data}
+# Some example monthly observational data
+mon <- c("2019 Jan", "2019 Feb", "2019 Mar","2019 Apr", "2019 May")
+obs <- c(50, 23, 34, 30, 25)
+z <- data.frame(Month = mon, Observations = obs)
 
-<!-- ## Examples Rmd code: -->
+# Creating a tsibble from a data frame of temporal data
+z %>%
+  # yearmonth, below, is an example of a time class function
+  # other examples in Freq/Func table in section 2.1
+  # from annual down to sub-daily.
+  mutate(Month = yearmonth(Month)) %>%
+  as_tsibble(index=Month)
+```
 
-<!-- ```{r setup, include=FALSE} -->
-<!-- knitr::opts_chunk$set(echo = TRUE) -->
-<!-- ``` -->
+```{r multiple time series in single tsibble}
+olympic_running
 
-<!-- ## R Markdown -->
+# Show the categories of a variable
+olympic_running %>% distinct(Sex)
 
-<!-- This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>. -->
+# Show the distinct combinations of two variables.
+# Section 2.1 states these two series uniquely identify
+# each record.
+olympic_running %>% distinct(Sex, Length)
 
-<!-- When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this: -->
+```
 
-<!-- ```{r cars} -->
-<!-- summary(cars) -->
-<!-- ``` -->
-
-<!-- ## Including Plots -->
-
-<!-- You can also embed plots, for example: -->
-
-<!-- ```{r pressure, echo=FALSE} -->
-<!-- plot(pressure) -->
-<!-- ``` -->
-
-<!-- Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. -->
+### Working with `tsibble` objects [[textbook link]](https://otexts.com/fpp3/tsibbles.html#working-with-tsibble-objects)

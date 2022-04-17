@@ -175,8 +175,13 @@ pre code {
 </div>
 
 
+<div id="chapter-2-time-series-graphics-textbook-link" class="section level1">
+<h1>Chapter 2 Time series graphics <a href="https://otexts.com/fpp3/graphics.html">[textbook link]</a></h1>
 <p>Quote: “Graphs enable many features of the data to be visualised, including patterns, unusual observations, changes over time, and relationships between variables”</p>
-<pre class="r"><code>y &lt;- tsibble(
+<div id="tsibble-objects-textbook-link" class="section level2">
+<h2>2.1 <code>tsibble</code> objects <a href="https://otexts.com/fpp3/tsibbles.html">[textbook link]</a></h2>
+<pre class="r"><code># tsibble is used for temporal data
+y &lt;- tsibble(
   Year = 2015:2019,
   Observation = c(123, 39, 78, 52, 110),
   index = Year
@@ -190,22 +195,75 @@ y</code></pre>
 ## 3  2017          78
 ## 4  2018          52
 ## 5  2019         110</code></pre>
-<!-- ## Examples Rmd code: -->
-<!-- ```{r setup, include=FALSE} -->
-<!-- knitr::opts_chunk$set(echo = TRUE) -->
-<!-- ``` -->
-<!-- ## R Markdown -->
-<!-- This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>. -->
-<!-- When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this: -->
-<!-- ```{r cars} -->
-<!-- summary(cars) -->
-<!-- ``` -->
-<!-- ## Including Plots -->
-<!-- You can also embed plots, for example: -->
-<!-- ```{r pressure, echo=FALSE} -->
-<!-- plot(pressure) -->
-<!-- ``` -->
-<!-- Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. -->
+<pre class="r"><code># Some example monthly observational data
+mon &lt;- c(&quot;2019 Jan&quot;, &quot;2019 Feb&quot;, &quot;2019 Mar&quot;,&quot;2019 Apr&quot;, &quot;2019 May&quot;)
+obs &lt;- c(50, 23, 34, 30, 25)
+z &lt;- data.frame(Month = mon, Observations = obs)
+
+# Creating a tsibble from a data frame of temporal data
+z %&gt;%
+  # yearmonth, below, is an example of a time class function
+  # other examples in Freq/Func table in section 2.1
+  # from annual down to sub-daily.
+  mutate(Month = yearmonth(Month)) %&gt;%
+  as_tsibble(index=Month)</code></pre>
+<pre><code>## # A tsibble: 5 x 2 [1M]
+##      Month Observations
+##      &lt;mth&gt;        &lt;dbl&gt;
+## 1 2019 Jan           50
+## 2 2019 Feb           23
+## 3 2019 Mar           34
+## 4 2019 Apr           30
+## 5 2019 May           25</code></pre>
+<pre class="r"><code>olympic_running</code></pre>
+<pre><code>## # A tsibble: 312 x 4 [4Y]
+## # Key:       Length, Sex [14]
+##     Year Length Sex    Time
+##    &lt;int&gt;  &lt;int&gt; &lt;chr&gt; &lt;dbl&gt;
+##  1  1896    100 men    12  
+##  2  1900    100 men    11  
+##  3  1904    100 men    11  
+##  4  1908    100 men    10.8
+##  5  1912    100 men    10.8
+##  6  1916    100 men    NA  
+##  7  1920    100 men    10.8
+##  8  1924    100 men    10.6
+##  9  1928    100 men    10.8
+## 10  1932    100 men    10.3
+## # ... with 302 more rows</code></pre>
+<pre class="r"><code># Show the categories of a variable
+olympic_running %&gt;% distinct(Sex)</code></pre>
+<pre><code>## # A tibble: 2 x 1
+##   Sex  
+##   &lt;chr&gt;
+## 1 men  
+## 2 women</code></pre>
+<pre class="r"><code># Show the distinct combinations of two variables.
+# Section 2.1 states these two series uniquely identify
+# each record.
+olympic_running %&gt;% distinct(Sex, Length)</code></pre>
+<pre><code>## # A tibble: 14 x 2
+##    Length Sex  
+##     &lt;int&gt; &lt;chr&gt;
+##  1    100 men  
+##  2    100 women
+##  3    200 men  
+##  4    200 women
+##  5    400 men  
+##  6    400 women
+##  7    800 men  
+##  8    800 women
+##  9   1500 men  
+## 10   1500 women
+## 11   5000 men  
+## 12   5000 women
+## 13  10000 men  
+## 14  10000 women</code></pre>
+<div id="working-with-tsibble-objects-textbook-link" class="section level3">
+<h3>Working with <code>tsibble</code> objects <a href="https://otexts.com/fpp3/tsibbles.html#working-with-tsibble-objects">[textbook link]</a></h3>
+</div>
+</div>
+</div>
 
 
 
