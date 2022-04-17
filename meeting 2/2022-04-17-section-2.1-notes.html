@@ -178,8 +178,14 @@ pre code {
 <div id="chapter-2-time-series-graphics-textbook-link" class="section level1">
 <h1>Chapter 2 Time series graphics <a href="https://otexts.com/fpp3/graphics.html">[textbook link]</a></h1>
 <p>Quote: “Graphs enable many features of the data to be visualised, including patterns, unusual observations, changes over time, and relationships between variables”</p>
-<div id="tsibble-objects-textbook-link" class="section level2">
-<h2>2.1 <code>tsibble</code> objects <a href="https://otexts.com/fpp3/tsibbles.html">[textbook link]</a></h2>
+<p>Load required packages.</p>
+<pre class="r"><code>library(fpp3)
+library(readr)</code></pre>
+<div id="tsibble-objects-section-link" class="section level2">
+<h2>2.1 <code>tsibble</code> objects <a href="https://otexts.com/fpp3/tsibbles.html">[section link]</a></h2>
+<p>Think of a time series as a list of numbers (measurements) along with info about the times they were recorded.</p>
+<div id="the-index-variable-subsection-link" class="section level3">
+<h3>The index variable <a href="https://otexts.com/fpp3/tsibbles.html#the-index-variable">[subsection link]</a></h3>
 <pre class="r"><code># tsibble is used for temporal data
 y &lt;- tsibble(
   Year = 2015:2019,
@@ -215,6 +221,9 @@ z %&gt;%
 ## 3 2019 Mar           34
 ## 4 2019 Apr           30
 ## 5 2019 May           25</code></pre>
+</div>
+<div id="the-key-variables-subsection-link" class="section level3">
+<h3>The key variables <a href="https://otexts.com/fpp3/tsibbles.html#the-key-variables">[subsection link]</a></h3>
 <pre class="r"><code>olympic_running</code></pre>
 <pre><code>## # A tsibble: 312 x 4 [4Y]
 ## # Key:       Length, Sex [14]
@@ -259,8 +268,173 @@ olympic_running %&gt;% distinct(Sex, Length)</code></pre>
 ## 12   5000 women
 ## 13  10000 men  
 ## 14  10000 women</code></pre>
-<div id="working-with-tsibble-objects-textbook-link" class="section level3">
-<h3>Working with <code>tsibble</code> objects <a href="https://otexts.com/fpp3/tsibbles.html#working-with-tsibble-objects">[textbook link]</a></h3>
+</div>
+<div id="working-with-tsibble-objects-subsection-link" class="section level3">
+<h3>Working with <code>tsibble</code> objects <a href="https://otexts.com/fpp3/tsibbles.html#working-with-tsibble-objects">[subsection link]</a></h3>
+<p>Working with dataset <code>PBS</code>. Medicare Australia prescription data from July 1991 to June 2008. These are classified according to various concession types, and Anatomical Therapeutic Chemical (ATC) indexes.</p>
+<pre class="r"><code>PBS</code></pre>
+<pre><code>## # A tsibble: 67,596 x 9 [1M]
+## # Key:       Concession, Type, ATC1, ATC2 [336]
+##       Month Concession   Type      ATC1  ATC1_desc ATC2  ATC2_desc Scripts  Cost
+##       &lt;mth&gt; &lt;chr&gt;        &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;dbl&gt;
+##  1 1991 Jul Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   18228 67877
+##  2 1991 Aug Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   15327 57011
+##  3 1991 Sep Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   14775 55020
+##  4 1991 Oct Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   15380 57222
+##  5 1991 Nov Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   14371 52120
+##  6 1991 Dec Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   15028 54299
+##  7 1992 Jan Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   11040 39753
+##  8 1992 Feb Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   15165 54405
+##  9 1992 Mar Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   16898 61108
+## 10 1992 Apr Concessional Co-payme~ A     Alimenta~ A01   STOMATOL~   18141 65356
+## # ... with 67,586 more rows</code></pre>
+<pre class="r"><code># We&#39;re interested in the Cost time series
+PBS %&gt;% 
+  filter(ATC2 == &quot;A10&quot;)</code></pre>
+<pre><code>## # A tsibble: 816 x 9 [1M]
+## # Key:       Concession, Type, ATC1, ATC2 [4]
+##       Month Concession   Type     ATC1  ATC1_desc ATC2  ATC2_desc Scripts   Cost
+##       &lt;mth&gt; &lt;chr&gt;        &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;
+##  1 1991 Jul Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   89733 2.09e6
+##  2 1991 Aug Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   77101 1.80e6
+##  3 1991 Sep Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   76255 1.78e6
+##  4 1991 Oct Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   78681 1.85e6
+##  5 1991 Nov Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   70554 1.69e6
+##  6 1991 Dec Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   75814 1.84e6
+##  7 1992 Jan Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   64186 1.56e6
+##  8 1992 Feb Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   75899 1.73e6
+##  9 1992 Mar Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   89445 2.05e6
+## 10 1992 Apr Concessional Co-paym~ A     Alimenta~ A10   ANTIDIAB~   97315 2.23e6
+## # ... with 806 more rows</code></pre>
+<pre class="r"><code># We&#39;re interested in a few select columns
+PBS %&gt;% 
+  filter(ATC2 == &quot;A10&quot;) %&gt;% 
+  select(Month, Concession, Type, Cost)</code></pre>
+<pre><code>## # A tsibble: 816 x 4 [1M]
+## # Key:       Concession, Type [4]
+##       Month Concession   Type           Cost
+##       &lt;mth&gt; &lt;chr&gt;        &lt;chr&gt;         &lt;dbl&gt;
+##  1 1991 Jul Concessional Co-payments 2092878
+##  2 1991 Aug Concessional Co-payments 1795733
+##  3 1991 Sep Concessional Co-payments 1777231
+##  4 1991 Oct Concessional Co-payments 1848507
+##  5 1991 Nov Concessional Co-payments 1686458
+##  6 1991 Dec Concessional Co-payments 1843079
+##  7 1992 Jan Concessional Co-payments 1564702
+##  8 1992 Feb Concessional Co-payments 1732508
+##  9 1992 Mar Concessional Co-payments 2046102
+## 10 1992 Apr Concessional Co-payments 2225977
+## # ... with 806 more rows</code></pre>
+<pre class="r"><code># We want to see the total cost per month
+# regardless of Concession or Type
+PBS %&gt;% 
+  filter(ATC2 == &quot;A10&quot;) %&gt;% 
+  select(Month, Concession, Type, Cost) %&gt;% 
+  summarise(TotalC = sum(Cost))</code></pre>
+<pre><code>## # A tsibble: 204 x 2 [1M]
+##       Month  TotalC
+##       &lt;mth&gt;   &lt;dbl&gt;
+##  1 1991 Jul 3526591
+##  2 1991 Aug 3180891
+##  3 1991 Sep 3252221
+##  4 1991 Oct 3611003
+##  5 1991 Nov 3565869
+##  6 1991 Dec 4306371
+##  7 1992 Jan 5088335
+##  8 1992 Feb 2814520
+##  9 1992 Mar 2985811
+## 10 1992 Apr 3204780
+## # ... with 194 more rows</code></pre>
+<pre class="r"><code># change the units from dollars to millions of dollars
+# and save result to new variable.
+PBS %&gt;% 
+  filter(ATC2 == &quot;A10&quot;) %&gt;% 
+  select(Month, Concession, Type, Cost) %&gt;% 
+  summarise(TotalC = sum(Cost)) %&gt;% 
+  mutate(Cost = TotalC / 1e6) -&gt; a10
+
+a10</code></pre>
+<pre><code>## # A tsibble: 204 x 3 [1M]
+##       Month  TotalC  Cost
+##       &lt;mth&gt;   &lt;dbl&gt; &lt;dbl&gt;
+##  1 1991 Jul 3526591  3.53
+##  2 1991 Aug 3180891  3.18
+##  3 1991 Sep 3252221  3.25
+##  4 1991 Oct 3611003  3.61
+##  5 1991 Nov 3565869  3.57
+##  6 1991 Dec 4306371  4.31
+##  7 1992 Jan 5088335  5.09
+##  8 1992 Feb 2814520  2.81
+##  9 1992 Mar 2985811  2.99
+## 10 1992 Apr 3204780  3.20
+## # ... with 194 more rows</code></pre>
+</div>
+<div id="read-a-csv-file-and-conver-to-a-tsibble-subsection-link" class="section level3">
+<h3>Read a csv file and conver to a tsibble <a href="https://otexts.com/fpp3/tsibbles.html#read-a-csv-file-and-convert-to-a-tsibble">[subsection link]</a></h3>
+<p>Commonly one reads in csv data, and then identifies the index and key variables.</p>
+<pre class="r"><code>prison &lt;- readr::read_csv(&quot;remote_data/prison_population.csv&quot;)</code></pre>
+<pre><code>## Rows: 3072 Columns: 6
+## -- Column specification --------------------------------------------------------
+## Delimiter: &quot;,&quot;
+## chr  (4): State, Gender, Legal, Indigenous
+## dbl  (1): Count
+## date (1): Date
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>prison &lt;- prison %&gt;% 
+  mutate(Quarter = yearquarter(Date)) %&gt;%
+  # select everything except the Date column
+  select(-Date) %&gt;% 
+  as_tsibble(
+    key = c(State, Gender, Legal, Indigenous),
+    index = Quarter
+  )
+
+prison</code></pre>
+<pre><code>## # A tsibble: 3,072 x 6 [1Q]
+## # Key:       State, Gender, Legal, Indigenous [64]
+##    State Gender Legal    Indigenous Count Quarter
+##    &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;      &lt;dbl&gt;   &lt;qtr&gt;
+##  1 ACT   Female Remanded ATSI           0 2005 Q1
+##  2 ACT   Female Remanded ATSI           1 2005 Q2
+##  3 ACT   Female Remanded ATSI           0 2005 Q3
+##  4 ACT   Female Remanded ATSI           0 2005 Q4
+##  5 ACT   Female Remanded ATSI           1 2006 Q1
+##  6 ACT   Female Remanded ATSI           1 2006 Q2
+##  7 ACT   Female Remanded ATSI           1 2006 Q3
+##  8 ACT   Female Remanded ATSI           0 2006 Q4
+##  9 ACT   Female Remanded ATSI           0 2007 Q1
+## 10 ACT   Female Remanded ATSI           1 2007 Q2
+## # ... with 3,062 more rows</code></pre>
+<p>Book states: “for a tsibble to be valid, it requires a unique index for each combination of keys.” Therefore, we get an error with the following:</p>
+<pre class="r"><code>tryCatch(
+  expr = data.frame(
+    Year = c(1990,1990,1990,1990),
+    key1 = c(&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;),
+    key2 = c(&quot;4&quot;,&quot;5&quot;,&quot;5&quot;,&quot;6&quot;),
+    m  = c(1,2,3,4)
+  ) %&gt;% as_tsibble(index = Year, key = c(key1, key2)),
+  error = function(x) {
+    x
+  }
+)</code></pre>
+<pre><code>## &lt;error/rlang_error&gt;
+## Error in `validate_tsibble()`:
+## ! A valid tsibble must have distinct rows identified by key and index.
+## i Please use `duplicates()` to check the duplicated rows.
+## ---
+## Backtrace:
+##  1. base::tryCatch(...)
+##  7. tsibble:::as_tsibble.data.frame(...)
+##  8. tsibble::build_tsibble(...)
+##  9. tsibble:::validate_tsibble(...)</code></pre>
+<pre class="r"><code>print(&quot;tryCatch worked as expected: printed error and execution continued.&quot;)</code></pre>
+<pre><code>## [1] &quot;tryCatch worked as expected: printed error and execution continued.&quot;</code></pre>
+</div>
+<div id="the-seasonal-period-subsection-link" class="section level3">
+<h3>The seasonal period <a href="https://otexts.com/fpp3/tsibbles.html#the-seasonal-period">[subsection link]</a></h3>
+<p>Contains a useful table containing numbers of time units in different periods.</p>
 </div>
 </div>
 </div>
