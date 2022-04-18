@@ -230,6 +230,196 @@ vic_elec %>%
 ```
 Here you can see the yearly seasonal patterns.
 
+## 2.5 Seasonal subseries plots [[subsection link]](https://otexts.com/fpp3/subseries.html#subseries)
+
+You can also create subplots, one per month, with the domain over the different years.
+
+```{r}
+a10 %>% 
+  gg_subseries(Cost) +
+  labs(y = '$ (millions)',
+       title = 'Australian antidiabetic drug sales')
+```
+The book mentions the blue line indicating the seasonality, but I don't find it particularly easy to conclude that from looking at this plot. The book goes on to say the plot isn't particularly revealing, with which I agree. I am curious what it would look like if there was a subplot per year, and the domain going over that year.
+
+I tried to change the domain with the following, but it didn't do what I was aiming for.
+
+```{r}
+# This does not do the thing. Anyone know how?
+
+# a10 %>% 
+#   gg_subseries(Cost) +
+#   labs(y = '$ (millions)',
+#        title = 'Australian antidiabetic drug sales',
+#        period = 'year')
+```
+```{r}
+head(tourism)
+
+holidays <- tourism %>% 
+  filter(Purpose == 'Holiday') %>% 
+  group_by(State) %>% 
+  summarise(Trips = sum(Trips))
+
+head(holidays)
+```
+
+```{r}
+autoplot(holidays, Trips) +
+  labs(y = "Overnight trips ('000)",
+       title = 'Australian domestic holidays')
+
+```
+```{r}
+gg_season(holidays, Trips) +
+  labs(y = "Overnight trups('000)",
+       title = "Australian domestic holidays")
+```
+```{r}
+holidays %>% 
+  gg_subseries(Trips) +
+  labs(y = "Overnight trips ('000)",
+       title = "Australian domestic holdays")
+```
+Above, you can see most of the regions have seen an increase over the mean in the past few years.
+
+## Scatterplots [[section link]](https://otexts.com/fpp3/scatterplots.html)
+
+```{r}
+vic_elec %>%
+  filter(year(Time) == 2014) %>%
+  autoplot(Demand) +
+  labs(y = "GW",
+       title = "Half-hourly electricity demand: Victoria")
+```
+```{r}
+vic_elec %>%
+  filter(year(Time) == 2014) %>%
+  autoplot(Temperature) +
+  labs(
+    y = "Degrees Celsius",
+    title = "Half-hourly temperatures: Melbourne, Australia"
+  )
+```
+
+```{r}
+vic_elec %>%
+  filter(year(Time) == 2014) %>%
+  ggplot(aes(x = Temperature, y = Demand)) +
+  geom_point() +
+  labs(x = "Temperature (degrees Celsius)",
+       y = "Electricity demand (GW)")
+
+```
+
+Figures 2.14 and 2.15 display correlations between various variables. Wikipedia article on Correlation: [[wikipedia]](https://en.wikipedia.org/wiki/Correlation).
+
+### Scatterplot matrices [[subsection link]](https://otexts.com/fpp3/scatterplots.html#scatterplot-matrices)
+
+```{r}
+visitors <- tourism %>%
+  group_by(State) %>%
+  summarise(Trips = sum(Trips))
+head(visitors)
+```
+
+```{r}
+visitors %>%
+  ggplot(aes(x = Quarter, y = Trips)) +
+  geom_line() +
+  facet_grid(vars(State), scales = "free_y") +
+  labs(title = "Australian domestic tourism",
+       y= "Overnight trips ('000)")
+```
+```{r, results='hide', warning=FALSE, message=FALSE}
+library(GGally)
+```
+
+```{r}
+visitors %>%
+  pivot_wider(values_from=Trips, names_from=State) %>%
+  GGally::ggpairs(columns = 2:9)
+```
+## 2.7 Lag plots [[section link]](https://otexts.com/fpp3/lag-plots.html)
+
+```{r}
+recent_production <- aus_production %>%
+  filter(year(Quarter) >= 2000)
+recent_production %>%
+  gg_lag(Beer, geom = "point") +
+  labs(x = "lag(Beer, k)")
+```
+Book quote: "Here the colours indicate the quarter of the variable on the vertical axis. The relationship is strongly positive at lags 4 and 8"
+
+Intuitively, I think this is because when you lag by multiples of four, you are kind of seeing the quarter-seasonal repetition. Is that how you all interpreted it?
+
+## Autocorrelation [[subsection link]](https://otexts.com/fpp3/acf.html)
+
+Measures the relationship between lagged values of a time series. Formula in book looks similar to correlation but with the second variable being some different year, in this case.
+
+```{r}
+head(recent_production)
+```
+
+The following output corresponds to the correlation coefficients in the `GGally::ggpairs` plot towards the end of 2.6.
+
+```{r}
+recent_production %>% ACF(Beer, lag_max)
+```
+```{r}
+recent_production %>% 
+  ACF(Beer) %>% 
+  autoplot() + labs(title = "Australian beer production")
+```
+I believe the optima in the coefficients are related to the four-quarter repetitions in the data.
+
+### Trend and seasonality in ACF plots [[subsection link]](https://otexts.com/fpp3/acf.html#trend-and-seasonality-in-acf-plots)
+
+```{r}
+a10 %>%
+  ACF(Cost, lag_max = 48) %>%
+  autoplot() +
+  labs(title="Australian antidiabetic drug sales")
+```
+For trends, autocorrelation decreases for increasing lags since the more recent lags are closer in value that further in the past.
+
+For seasonal data, autocorrelation coefficients peak at the seasonal periods.
+
+For trending and seasonal data, the autocorrelation shows both of these relationships.
+
+```{r}
+a10 %>%
+  ACF(Cost, lag_max = 48) %>%
+  autoplot() +
+  labs(title="Australian antidiabetic drug sales")
+```
+
+## 2.9 White noise [[section link]](https://otexts.com/fpp3/wn.html)
+
+Lack of autocorrelation called "white noise."
+
+```{r}
+set.seed(30)
+y <- tsibble(sample = 1:50, wn = rnorm(50), index = sample)
+y %>% autoplot(wn) + labs(title = "White noise", y = "")
+```
+```{r}
+y %>%
+  ACF(wn) %>%
+  autoplot() + labs(title = "White noise")
+```
+Above, you can see there's no clear pattern in the autocorrelation coefficients, and the coefficients are rather close to zero.
+
+Book: for white noise the autocorrelation won't be zero everywhere because of the random variation, but 95% of the spikes in the ACF are expected to lie within `+- 2*sqrt(T)`, where `T` is the length of the time series. Commonly people plot the bounds on the autocorrelation coefficient plots. More than 5% of the coefficients outside of these bonds indicates that the series is probably not white noise.
+
+In the above example, all of the coefficients are within the bounds (`T=50`, `+- 2*sqrt(T) ~= +- 0.28`).
+
+
+
+
+
+
+
 
 
 
