@@ -340,6 +340,85 @@ visitors %>%
   pivot_wider(values_from=Trips, names_from=State) %>%
   GGally::ggpairs(columns = 2:9)
 ```
+## 2.7 Lag plots [[section link]](https://otexts.com/fpp3/lag-plots.html)
+
+```{r}
+recent_production <- aus_production %>%
+  filter(year(Quarter) >= 2000)
+recent_production %>%
+  gg_lag(Beer, geom = "point") +
+  labs(x = "lag(Beer, k)")
+```
+Book quote: "Here the colours indicate the quarter of the variable on the vertical axis. The relationship is strongly positive at lags 4 and 8"
+
+Intuitively, I think this is because when you lag by multiples of four, you are kind of seeing the quarter-seasonal repetition. Is that how you all interpreted it?
+
+## Autocorrelation [[subsection link]](https://otexts.com/fpp3/acf.html)
+
+Measures the relationship between lagged values of a time series. Formula in book looks similar to correlation but with the second variable being some different year, in this case.
+
+```{r}
+head(recent_production)
+```
+
+The following output corresponds to the correlation coefficients in the `GGally::ggpairs` plot towards the end of 2.6.
+
+```{r}
+recent_production %>% ACF(Beer, lag_max)
+```
+```{r}
+recent_production %>% 
+  ACF(Beer) %>% 
+  autoplot() + labs(title = "Australian beer production")
+```
+I believe the optima in the coefficients are related to the four-quarter repetitions in the data.
+
+### Trend and seasonality in ACF plots [[subsection link]](https://otexts.com/fpp3/acf.html#trend-and-seasonality-in-acf-plots)
+
+```{r}
+a10 %>%
+  ACF(Cost, lag_max = 48) %>%
+  autoplot() +
+  labs(title="Australian antidiabetic drug sales")
+```
+For trends, autocorrelation decreases for increasing lags since the more recent lags are closer in value that further in the past.
+
+For seasonal data, autocorrelation coefficients peak at the seasonal periods.
+
+For trending and seasonal data, the autocorrelation shows both of these relationships.
+
+```{r}
+a10 %>%
+  ACF(Cost, lag_max = 48) %>%
+  autoplot() +
+  labs(title="Australian antidiabetic drug sales")
+```
+
+## 2.9 White noise [[section link]](https://otexts.com/fpp3/wn.html)
+
+Lack of autocorrelation called "white noise."
+
+```{r}
+set.seed(30)
+y <- tsibble(sample = 1:50, wn = rnorm(50), index = sample)
+y %>% autoplot(wn) + labs(title = "White noise", y = "")
+```
+```{r}
+y %>%
+  ACF(wn) %>%
+  autoplot() + labs(title = "White noise")
+```
+Above, you can see there's no clear pattern in the autocorrelation coefficients, and the coefficients are rather close to zero.
+
+Book: for white noise the autocorrelation won't be zero everywhere because of the random variation, but 95% of the spikes in the ACF are expected to lie within `+- 2*sqrt(T)`, where `T` is the length of the time series. Commonly people plot the bounds on the autocorrelation coefficient plots. More than 5% of the coefficients outside of these bonds indicates that the series is probably not white noise.
+
+In the above example, all of the coefficients are within the bounds (`T=50`, `+- 2*sqrt(T) ~= +- 0.28`).
+
+
+
+
+
+
 
 
 
