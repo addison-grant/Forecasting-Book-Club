@@ -230,6 +230,31 @@ vic_elec %>%
 ```
 Here you can see the yearly seasonal patterns.
 
+## 2.5 Seasonal subseries plots [[subsection link]](https://otexts.com/fpp3/subseries.html#subseries)
+
+You can also create subplots, one per month, with the domain over the different years.
+
+```{r}
+a10 %>% 
+  gg_subseries(Cost) +
+  labs(y = '$ (millions)',
+       title = 'Australian antidiabetic drug sales')
+```
+The book mentions the blue line indicating the seasonality, but I don't find it particularly easy to conclude that from looking at this plot. The book goes on to say the plot isn't particularly revealing, with which I agree. I am curious what it would look like if there was a subplot per year, and the domain going over that year.
+
+I tried to change the domain with the following, but it didn't do what I was aiming for.
+
+```{r}
+a10 %>% 
+  gg_subseries(Cost) +
+  labs(y = '$ (millions)',
+       title = 'Australian antidiabetic drug sales',
+       # This does not do the thing. Anyone know how?
+       period = 'year')
+```
+
+
+
 
 
 
