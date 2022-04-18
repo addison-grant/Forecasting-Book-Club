@@ -136,3 +136,100 @@ print("tryCatch worked as expected: printed error and execution continued.")
 ### The seasonal period [[subsection link]](https://otexts.com/fpp3/tsibbles.html#the-seasonal-period)
 
 Contains a useful table containing numbers of time units in different periods.
+
+## 2.2 Time plots
+
+"For time series data, the obvious graph to start with is a time plot. That is, the observations are plotted against the time of observation, with consecutive observations joined by straight lines."
+
+```{r}
+melsyd_economy <- ansett %>% 
+  filter(Airports == "MEL-SYD", Class == "Economy") %>% 
+  mutate(Passengers = Passengers / 1000)
+
+# Automatically select a plot given the data passed in
+autoplot(melsyd_economy, Passengers) +
+  labs(title = "Ansett airlines economy class",
+       subtitle = "Melbourne-Sydney",
+       y = "Passengers ('000)")
+```
+```{r}
+# relies on a10 data from section 2.1
+autoplot(a10, Cost) +
+  labs(y = "$ (millions)",
+       title = "Australian antidiabetic drug sales")
+```
+
+## 2.3 Time series patterns
+
+More careful definitions of "trend" and "seasonal" would be useful.
+
+### Trend
+
+Long period of overall increase or decrease. There may be seasonal ups and downs, but overall there is a general direction. Does not have to be linear.
+
+### Seasonal
+
+Seasonal patterns are where there is a clear effect that lines up with some time period like yearly or weekly. Seasonality is always associated with a fixed time period length.
+
+### Cyclic
+
+Like seasonal, but not associated with a necessarily fixed time period length. Often associated with economic events, or what "business cycles." The duration is typically at least 2 years.
+
+Cyclic and seasonal often confused for one another, but in actuality they are quite different. Figure 2.3 shows different combinations of these components. [[Link to figure]](https://otexts.com/fpp3/tspatterns.html#fig:fourexamples).
+
+1. Top left: No apparent trend. Strong yearly seasonal pattern. Apparent 6-10 year cycle.
+2. Top right: Clear downward trend. No clear seasonality. Book mentions more data might reveal the trend is part of a cycle. _I think I can see a potential cycle on the order of 25 years._
+3. Bottom left: Clear upward trend. Apparent strong seasonality. No evidence of cyclic component.
+4. Bottom right: No clear trend, seasonality, or cyclic behavior. Apparently no strong patterns that would help develop a forecasting model.
+
+## 2.4 Seasonal Plots
+
+Like time plot except each season broken out into separate series for the plot.
+
+```{r}
+a10 %>%
+  gg_season(Cost, labels = "both") +
+  labs(y = "$ (millions)",
+       title = "Seasonal plot: Antidiabetic drug sales")
+```
+Aspects of seasonal plots:
+- Can see seasonal patterns clearly
+- Can see deviations between seasons more easily
+- Useful, for example, in seeing years in which patterns change
+
+In the above plot
+- you can see a repeating bump in sales recorded in January each year
+- you can see dip in March 2008 sales unlike other years
+- the dip in June 2008 probably due to sales data not completely collected yet for that month.
+
+### Multiple seasonal periods [[subsection link]](https://otexts.com/fpp3/seasonal-plots.html#multiple-seasonal-periods)
+
+The seasonal plot function, `gg_seasonal`, allows you to plot different period lengths with the `period` argument.
+
+```{r}
+vic_elec %>% 
+  gg_season(Demand, period = "day") +
+  theme(legend.position = "none") +
+  labs(y = "MWh", title = "Electricty demand: Victoria")
+```
+Above, you can see 3 lines with 25 hours, which correspond to uncorrected daylight savings times.
+
+```{r}
+vic_elec %>% 
+  gg_season(Demand, period = "week") +
+  theme(legend.position = "none") +
+  labs(y = "MWh", title = "Electricty demand: Victoria")
+```
+Above you can see weekly seasonal patterns.
+
+```{r}
+vic_elec %>% 
+  gg_season(Demand, period = "year") +
+  theme(legend.position = "none") +
+  labs(y = "MWh", title = "Electricty demand: Victoria")
+```
+Here you can see the yearly seasonal patterns.
+
+
+
+
