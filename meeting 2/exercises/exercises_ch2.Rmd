@@ -1,0 +1,85 @@
+---
+title: "Chapter 2 exercises"
+author: "Addison"
+date: "4/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(fpp3)
+```
+
+
+1. Use the help function to explore what the series gafa_stock, PBS, vic_elec and pelt represent.
+  a. Use autoplot() to plot some of the series in these data sets.
+  b. What is the time interval of each series?
+
+```{r}
+?gafa_stock
+gs <- gafa_stock %>% update_tsibble(index = Date)
+gafa_stock %>% distinct(Symbol)
+?autoplot
+gafa_stock %>% autoplot
+```
+
+```{r}
+?PBS
+head(PBS)
+PBS %>% autoplot
+PBS %>% 
+  select(Month, Type, Scripts) %>% 
+  pivot_longer(values_from=Scripts, names_from=Type)
+```
+
+```{r}
+?vic_elec
+
+```
+
+```{r}
+?pelt
+```
+
+
+```{r}
+# (a) You can read the data into R with the following script:
+tute1 <- readr::read_csv("tute1.csv")
+head(tute1)
+```
+```{r}
+View(tute1)
+```
+
+```{r}
+# (b) Convert the data to time series
+mytimeseries <- tute1 %>% 
+  mutate(Quarter = yearmonth(Quarter)) %>% 
+  as_tibble(index = Quarter)
+
+mytimeseries
+```
+```{r}
+# (c) Construct time series plots of each of the three series
+mytimeseries %>%
+  pivot_longer(-Quarter) %>%
+  ggplot(aes(x = Quarter, y = value, colour = name)) +
+  geom_line() +
+  facet_grid(name ~ ., scales = "free_y")
+```
+```{r}
+mytimeseries %>%
+  pivot_longer(-Quarter)
+```
+```{r}
+# (c, cont.) Check what happens when you don’t include facet_grid().
+mytimeseries %>%
+  pivot_longer(-Quarter) %>%
+  ggplot(aes(x = Quarter, y = value, colour = name)) +
+  geom_line()
+```
+
+
+
+
+
